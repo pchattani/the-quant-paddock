@@ -4,7 +4,8 @@
  * data/<y>/season.json (car pace by round with standard errors, car/driver split,
  * constructors' standings and championship simulation), data/<y>/drivers.json
  * (the team's drivers), data/markets.json (constructors' title prices), and the
- * race files for the pit-stop distribution when teams.json carries only a summary. */
+ * race files for the pit-stop distribution when teams.json carries only a summary, and
+ * data/<y>/needs.json (strengths and needs: graded areas and the best driver swaps; current season). */
 (function (PD) {
 'use strict';
 
@@ -131,7 +132,9 @@ function renderTeam(el, params, state) {
     h += '<div class="grid-2"><div class="card"><div class="card-header">Reliability and points by round <span class="card-sub">Points per round (bars) and retirements (red markers).</span></div><div id="tm-rel" style="height:300px"></div></div>' +
       '<div class="card"><div class="card-header">Constructors\' title <span class="card-sub">Model probability against the de-vigged market, and the simulated finishing-position distribution.</span></div><div id="tm-title"></div><div id="tm-posdist" style="height:220px"></div></div></div>';
     h += '<div class="card"><div class="card-header">Percentiles <span class="card-sub">The team catalogue against the rest of the field (100 = best), including strategy outcome and reliability.</span></div><div id="tm-pct"></div></div>';
+    h += '<div class="card" id="tm-needs-card" style="display:none"><div class="card-header">Strengths and needs <span class="card-sub">Areas graded against the field, the three biggest strengths and weaknesses, and the driver swaps that would add the most points.</span></div><div id="tm-needs" class="pad"></div></div>';
     el.innerHTML = h;
+    needs(id, y);
 
     // Car pace charts.
     const others = Object.keys((((season || {}).car_pace || {}).race) || {}).filter(k => k !== id);
@@ -237,6 +240,35 @@ function renderTeam(el, params, state) {
     } else document.getElementById('tm-posdist').innerHTML = muted(season && season.championship === null ? 'The season is over.' : 'No simulation for this season.');
 
     document.getElementById('tm-pct').innerHTML = t ? PG().pctPanel(metrics, t.values, t.pct) : muted('Not in the team catalogue.');
+  });
+}
+
+/* Strengths and needs: data/<y>/needs.json (the current season). */
+const GRADE_COLOUR = { A: '#3fb950', B: '#7ee787', C: '#d29922', D: '#f97316', F: '#f85149' };
+function gradeChip(g) { return g ? '<span class="pv-grade" style="background:' + (GRADE_COLOUR[g] || '#30363d') + '">' + g + '</span>' : '—'; }
+function needs(id, y) {
+  PD.load(y + '/needs.json').then(d => {
+    const box = document.getElementById('tm-needs'), cardEl = document.getElementById('tm-needs-card');
+    if (!box || !PD.ok(d) || !(d.teams || {})[id]) return;
+    const x = d.teams[id];
+    cardEl.style.display = '';
+    const fmtA = a => (isNum(a.value) ? (Math.abs(a.value) >= 100 ? num(a.value, 0) : num(a.value, 3)) : '—');
+    const item = (a, cls) => '<div class="pv-item ' + cls + '">' + gradeChip(a.grade) + ' <strong>' + esc(a.label) + '</strong> <span class="muted-inline">' + PD.ordinal(a.pct) + ' percentile</span><div class="pv-ev">' + esc(a.stat || '') + '</div></div>';
+    const swaps = list => list && list.length ? tableHTML([{ label: 'In', sortable: false }, { label: 'From', sortable: false }, { label: 'Out', sortable: false },
+      { label: 'Team points', align: 'right', sortable: false }, { label: 'Title', align: 'right', sortable: false }, { label: 'Their team', align: 'right', sortable: false }, { label: '', sortable: false }],
+      list.map(s => ({ cells: [{ v: s.in_name, html: PD.driverLink(s.in, s.in_name) }, { v: s.from, html: PD.teamLink(s.from) }, { v: s.out_name, html: PD.driverLink(s.out, s.out_name) },
+        { v: s.gain_pts, html: '<strong>' + signed(s.gain_pts, 1) + '</strong>' }, { v: s.gain_title, html: signed(100 * s.gain_title, 1) + ' pp' },
+        { v: s.other_change, html: signed(s.other_change, 1) }, { v: '', html: '<a href="#/swap?x=' + encodeURIComponent(s.in) + '&w=' + encodeURIComponent(s.out) + '">Simulate →</a>' }] })), { compact: true }) : muted('No swap adds points.');
+    const imp = (x.improve || []).map(w => '<div class="pv-imp-h">To improve: <strong>' + esc(w.label) + '</strong></div>' + (w.swaps && w.swaps.length ? swaps(w.swaps) : muted(esc(w.note || '')))).join('');
+    box.innerHTML = '<div class="pv-label">' + esc(d.label || '') + '</div>' +
+      '<div class="grid-2"><div><div class="pv-sub">Top strengths</div>' + ((x.strengths || []).map(a => item(a, 'pv-good')).join('') || muted('None stands out.')) + '</div>' +
+      '<div><div class="pv-sub">Top weaknesses</div>' + ((x.weaknesses || []).map(a => item(a, 'pv-bad')).join('') || muted('None below the 40th percentile.')) + '</div></div>' +
+      (x.balance ? '<div class="pv-note2">Balance: the car ' + esc(x.balance) + '.</div>' : '') +
+      '<div class="pv-sub">Areas against the field</div>' + tableHTML([{ label: 'Area', sortable: false }, { label: 'Value', align: 'right' }, { label: 'Pct', align: 'right' }, { label: 'Grade', align: 'right' }, { label: 'Measured as', sortable: false }],
+        (x.areas || []).map(a => ({ cells: [{ v: a.label, html: esc(a.label) }, { v: a.value, html: fmtA(a) }, { v: a.pct, html: PD.pctPill(a.pct) }, { v: a.grade || '', html: gradeChip(a.grade) }, { v: '', html: '<span class="muted-inline">' + esc(a.stat || '') + '</span>' }] })), { compact: true }) +
+      (imp ? '<div class="pv-sub">Ways to improve</div>' + imp : '') +
+      '<div class="pv-sub">The driver swaps that would add the most points</div>' + swaps(x.best_swaps) +
+      '<div class="pg-note">Grades: A from the 80th percentile, B 60th, C 40th, D 20th, F below, among the teams this season. Swaps: each pair run through the championship simulation of the remaining rounds (' + (d.swaps_n || '') + ' runs, common random numbers), the change in expected constructors\' points. <a href="#/swap">Driver-swap simulator →</a></div>';
   });
 }
 

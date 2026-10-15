@@ -209,3 +209,28 @@ a.gl-link:hover { color: var(--blue); border-bottom-color: var(--blue); }
 .doc-body table.tbl th { background: var(--bg3); color: var(--text2); text-align: left; padding: 5px 9px; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); }
 .doc-body table.tbl td { padding: 4px 9px; border-bottom: 1px solid #21262d; color: var(--text2); vertical-align: top; }
 .doc-body h3 { font-size: 0.9rem; font-weight: 700; color: var(--text); margin: 16px 0 6px; }
+
+/* ── Driver value, swaps, strengths and needs (pv-, sw-) ───────────────────── */
+.pv-best { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; padding: 10px 14px 14px; }
+.pv-mini { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; min-width: 0; }
+.pv-mini-h { font-size: 0.78rem; font-weight: 700; margin-bottom: 4px; }
+.pv-mini-r { display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; gap: 6px; font-size: 0.78rem; padding: 2px 0; align-items: center; }
+.pv-mini-r .muted-inline { display: none; }
+.pv-n { color: var(--text3); font-variant-numeric: tabular-nums; }
+.pv-v { font-variant-numeric: tabular-nums; font-weight: 600; }
+.pv-grade { display: inline-block; min-width: 20px; text-align: center; font-size: 0.72rem; font-weight: 800; color: #0d1117; border-radius: 4px; padding: 0 4px; line-height: 1.5; }
+.pv-label { font-size: 0.78rem; color: var(--text2); border-left: 3px solid var(--blue); padding: 4px 8px; margin-bottom: 8px; background: var(--bg); }
+.pv-sub { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text3); margin: 10px 0 4px; }
+.pv-item { font-size: 0.82rem; padding: 4px 0; border-bottom: 1px dashed var(--border); }
+.pv-ev { font-size: 0.74rem; color: var(--text2); margin-top: 2px; overflow-wrap: anywhere; }
+.pv-imp-h { font-size: 0.82rem; margin: 10px 0 4px; }
+.pv-note2 { font-size: 0.8rem; color: var(--text2); margin-top: 8px; }
+.sw-ctl { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: flex-end; }
+.sw-ctl label { display: flex; flex-direction: column; gap: 3px; font-size: 0.75rem; color: var(--text2); min-width: 0; flex: 1 1 180px; }
+.sw-ctl select { max-width: 100%; min-width: 0; }
+.sw-share { flex: 1 1 100%; }
+.sw-share label { flex-direction: row; align-items: center; gap: 6px; }
+.sw-share input { flex: 1 1 auto; min-width: 0; width: 100%; background: var(--bg); color: var(--text2); border: 1px solid var(--border); border-radius: 4px; padding: 3px 6px; font-size: 0.74rem; }
+.sw-d { color: var(--text3); font-size: 0.74rem; }
+.sw-ctx { font-size: 0.8rem; color: var(--text2); line-height: 1.5; }
+@media (max-width: 640px) { .pv-best { grid-template-columns: minmax(0, 1fr); } .sw-ctl label { flex: 1 1 100%; } }

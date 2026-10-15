@@ -95,6 +95,9 @@ addRoute('compare/teams', 'compare-teams', ['compare'], { kind: 'teams' });
 addRoute('compare/teams/:a', 'compare-teams', ['compare'], { kind: 'teams' });
 addRoute('compare/teams/:a/:b', 'compare-teams', ['compare'], { kind: 'teams' });
 addRoute('markets', 'markets');
+addRoute('value', 'value');
+addRoute('value/:year', 'value');
+addRoute('swap', 'swap');
 addRoute('calibration', 'calibration');
 addRoute('glossary', 'glossary');
 addRoute('methodology', 'methodology');
@@ -113,13 +116,14 @@ const TITLES = {
   hub: 'Hub', season: 'Season', races: 'Races', race: 'Race centre', quali: 'Qualifying', telemetry: 'Telemetry lab',
   driver: 'Driver', team: 'Team', circuit: 'Circuit', drivers: 'Drivers', teams: 'Teams', circuits: 'Circuits',
   lab: 'Lab', compare: 'Compare', 'compare-drivers': 'Compare drivers', 'compare-teams': 'Compare teams',
-  markets: 'Markets', calibration: 'Calibration', glossary: 'Glossary', methodology: 'Methodology', disclaimer: 'Disclaimer & terms'
+  markets: 'Markets', calibration: 'Calibration', glossary: 'Glossary', methodology: 'Methodology', disclaimer: 'Disclaimer & terms',
+  value: 'Driver value', swap: 'Driver-swap simulator'
 };
 // Which top-nav link lights up for each route.
 const NAV_OF = { hub: 'hub', season: 'season', races: 'races', race: 'races', quali: 'races', telemetry: 'races',
   driver: 'drivers', drivers: 'drivers', team: 'teams', teams: 'teams', circuit: 'circuits', circuits: 'circuits',
   lab: 'lab', compare: 'compare', 'compare-drivers': 'compare', 'compare-teams': 'compare', markets: 'markets',
-  calibration: 'calibration', glossary: 'glossary', methodology: 'methodology' };
+  calibration: 'calibration', glossary: 'glossary', methodology: 'methodology', value: 'value', swap: 'swap' };
 
 function normPattern(s) {
   return String(s || '').trim().replace(/^#/, '').replace(/^\/+|\/+$/g, '').replace(/<(\w+)>/g, ':$1');
