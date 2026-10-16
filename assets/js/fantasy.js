@@ -148,7 +148,7 @@ function scheduleTable(kind) {
     cols: rounds.map(r => ({ label: 'R' + r[0] + (r[2] ? ' S' : ''), title: (r[1] || '') + (r[2] ? ' (sprint weekend)' : '') })),
     rows: order.map(id => ({ label: kind === 'teams' ? PD.teamLink(id) : PD.driverLink(id, { code: true, team: ((F._byId || {})[id] || {}).team }), values: src[id],
       titles: rounds.map(r => (r[1] || '') + ': expected points') })),
-    fmt: v => num(v, 1), center: 'col'
+    fmt: v => num(v, 1), center: 'col', invert: true
   });
 }
 
@@ -161,7 +161,7 @@ function historyTable() {
   return PD.charts.heatTable({
     corner: 'Driver', cols: rounds.map(r => ({ label: 'R' + r[0], title: r[1] || '' })),
     rows: order.map(id => ({ label: PD.driverLink(id, { code: true, team: ((F._byId || {})[id] || {}).team }), values: H.drivers[id].slice(k), titles: rounds.map(r => r[1] || '') })),
-    fmt: v => num(v, 0), center: 'col'
+    fmt: v => num(v, 0), center: 'col', invert: true
   });
 }
 
@@ -278,7 +278,7 @@ function render(el) {
     h += card('Constructors', 'Both drivers plus qualifying progression and pit-stop bands.', teamTable(T));
     h += card('The schedule ahead', 'Expected points per remaining round, coloured against the round\'s median (green above). S = sprint weekend.',
       '<div class="pad ft-ctl">' + PG().toggle('ft-sched', [['drivers', 'Drivers'], ['teams', 'Constructors']], ST.sched) + '</div><div id="ft-sbox"></div>');
-    h += card('Season so far', 'Actual points per weekend with our table, the last ten rounds.', historyTable());
+    h += card('Season so far', 'Actual points per weekend with our table, the last ten rounds; green above the round median.', historyTable());
     h += backtestCard();
     h += scoringCard();
     el.innerHTML = h;
