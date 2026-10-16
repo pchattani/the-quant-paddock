@@ -19,6 +19,7 @@
  *   #/compare/teams/<a>/<b>         compare-teams   (falls back to a 'compare' handler)
  *   #/compare                       compare
  *   #/markets #/calibration #/glossary #/methodology #/disclaimer
+ *   #/value[/<y>] #/swap #/fantasy
  *
  * Extra trailing segments land in params.rest; a "?a=1&b=2" suffix lands in
  * params.query. A render function is called as fn(el, params, state): `el` is a
@@ -98,6 +99,7 @@ addRoute('markets', 'markets');
 addRoute('value', 'value');
 addRoute('value/:year', 'value');
 addRoute('swap', 'swap');
+addRoute('fantasy', 'fantasy');
 addRoute('calibration', 'calibration');
 addRoute('glossary', 'glossary');
 addRoute('methodology', 'methodology');
@@ -117,13 +119,13 @@ const TITLES = {
   driver: 'Driver', team: 'Team', circuit: 'Circuit', drivers: 'Drivers', teams: 'Teams', circuits: 'Circuits',
   lab: 'Lab', compare: 'Compare', 'compare-drivers': 'Compare drivers', 'compare-teams': 'Compare teams',
   markets: 'Markets', calibration: 'Calibration', glossary: 'Glossary', methodology: 'Methodology', disclaimer: 'Disclaimer & terms',
-  value: 'Driver value', swap: 'Driver-swap simulator'
+  value: 'Driver value', swap: 'Driver-swap simulator', fantasy: 'Fantasy'
 };
 // Which top-nav link lights up for each route.
 const NAV_OF = { hub: 'hub', season: 'season', races: 'races', race: 'races', quali: 'races', telemetry: 'races',
   driver: 'drivers', drivers: 'drivers', team: 'teams', teams: 'teams', circuit: 'circuits', circuits: 'circuits',
   lab: 'lab', compare: 'compare', 'compare-drivers': 'compare', 'compare-teams': 'compare', markets: 'markets',
-  calibration: 'calibration', glossary: 'glossary', methodology: 'methodology', value: 'value', swap: 'swap' };
+  calibration: 'calibration', glossary: 'glossary', methodology: 'methodology', value: 'value', swap: 'swap', fantasy: 'fantasy' };
 
 function normPattern(s) {
   return String(s || '').trim().replace(/^#/, '').replace(/^\/+|\/+$/g, '').replace(/<(\w+)>/g, ':$1');
